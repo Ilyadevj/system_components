@@ -1,21 +1,28 @@
 package main
 
 import (
-	"log"
-
-	"system_components/internal/api"
+	"system_components/internal/app/config"
+	"system_components/internal/app/dsn"
 	"system_components/internal/app/handler"
 	"system_components/internal/app/repository"
+	"system_components/pkg"
+
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	repo := repository.NewRepository()
-	h := handler.NewHandler(repo)
+	cfg := config.Load()
 
-	router := api.SetupRouter(h)
-
-	log.Println("Сервер слушает на http://localhost:8080/system-components")
-	if err := router.Run(":8080"); err != nil {
-		log.Fatalf("Ошибка запуска HTTP-сервера: %v", err)
+	db, err := dsn.Connect(cfg)
+	if err != nil {
+		logrus.Fatalf("Database connection error: %v", err)
 	}
+
+	repo := repository.NewRepository(db)
+	h := handler.NewHandler(repo)
+	router := gin.Default()
+
+	app := pkg.NewApp(&cfg, router, h)
+	app.RunApp()
 }

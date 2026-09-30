@@ -1,20 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
 
 :root {
-  --bg-canvas: #0B0C0E;
-  --bg-panel: #141619;
-  --bg-panel-hover: #1F2329;
-  --bg-input: #0F1012;
-  --border-subtle: #2C3235;
-  --border-dashed: #3E444E;
-  --border-focus: #3274D9;
-  --text-primary: #EBEDEF;
-  --text-secondary: #8E949E;
-  --text-muted: #525862;
+  --bg-canvas: #090A0C;
+  --bg-panel: #111317;
+  --bg-panel-translucent: rgba(17, 19, 23, 0.72);
+  --bg-input: #16181D;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: #3274D9;
+  --text-primary: #F4F5F6;
+  --text-secondary: #9095A0;
+  --text-muted: #555A64;
   --grafana-blue: #3274D9;
   --grafana-blue-hover: #4686EB;
-  --grafana-orange: #FF780A;
+  --grafana-blue-glow: rgba(50, 116, 217, 0.35);
   --grafana-red: #E02F44;
+  --grafana-green: #2DA44E;
 }
 
 * {
@@ -24,87 +24,144 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-body.mobile-viewport {
-  background-color: var(--bg-canvas);
+html, body {
+  background-color: #030405;
   color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Мобильный экран Vibes */
+.mobile-viewport {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   width: 100vw;
   max-width: 414px;
   height: 100vh;
-  margin: 0 auto;
+  max-height: 896px;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 45px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 10px 60px rgba(0, 0, 0, 0.95);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
 }
 
-/* Шапка */
+/* ================= 1. ШАПКА ================= */
 .app-header {
-  height: 50px;
-  background-color: var(--bg-panel);
+  height: 54px;
+  background: var(--bg-panel-translucent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #5794F2;
+  box-shadow: 0 0 10px #5794F2;
 }
 
 .header-title {
   font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
   color: var(--text-primary);
 }
 
 .page-content.scrollable {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 72px;
+  padding-bottom: 74px;
 }
 
-/* Фильтр: кастомные чекбоксы Grafana */
+/* ================= 2. ФИЛЬТР СЛОЕВ (КАТАЛОГ) ================= */
 .filter-box {
-  background-color: var(--bg-panel);
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border-subtle);
+  margin: 12px 14px 6px;
+  padding: 12px 14px;
+  background: rgba(22, 24, 29, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.filter-header-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
 }
 
 .filter-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .checkbox-label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #D3D5D9;
   cursor: pointer;
   user-select: none;
+  transition: color 0.15s ease;
+}
+
+.checkbox-label:hover {
+  color: #FFFFFF;
 }
 
 .checkbox-label input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 1px solid var(--border-subtle);
+  width: 17px;
+  height: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   background-color: var(--bg-input);
-  border-radius: 3px;
+  border-radius: 4px;
   display: grid;
   place-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .checkbox-label input[type="checkbox"]:checked {
   background-color: var(--grafana-blue);
   border-color: var(--grafana-blue);
+  box-shadow: 0 0 8px var(--grafana-blue-glow);
 }
 
 .checkbox-label input[type="checkbox"]:checked::before {
@@ -117,51 +174,64 @@ body.mobile-viewport {
 }
 
 .apply-btn {
-  background-color: var(--grafana-blue);
+  background: linear-gradient(135deg, #3274D9 0%, #2054A6 100%);
   color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   padding: 7px 16px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: background-color 0.15s;
+  box-shadow: 0 2px 10px rgba(50, 116, 217, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .apply-btn:hover {
-  background-color: var(--grafana-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(50, 116, 217, 0.5);
 }
 
-/* Каталог: Сетка карточек */
+/* ================= 3. СЕТКА КАРТОЧЕК ================= */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  padding: 14px;
+  padding: 12px 14px;
+}
+
+.grid-card-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .grid-card {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: 10px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  height: 100%;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .grid-card:hover {
-  border-color: #444c57;
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
 }
 
 .card-img-wrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  background-color: #050608;
+  background-color: #030405;
+  overflow: hidden;
 }
 
 .card-img {
@@ -173,16 +243,52 @@ body.mobile-viewport {
 
 .card-likes-badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  background: rgba(11, 12, 14, 0.85);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  top: 7px;
+  right: 7px;
+  background: rgba(11, 13, 16, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--grafana-red);
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Кнопка удаления на карточке */
+.delete-card-form {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  z-index: 5;
+}
+
+.delete-card-btn {
+  background: rgba(17, 19, 23, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(224, 47, 68, 0.5);
+  color: #FF5C6C;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+.delete-card-btn:hover {
+  background: var(--grafana-red);
+  color: #FFFFFF;
+  transform: scale(1.12);
+  box-shadow: 0 0 12px rgba(224, 47, 68, 0.6);
 }
 
 .card-body {
@@ -198,12 +304,12 @@ body.mobile-viewport {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
   align-self: flex-start;
-  background-color: rgba(50, 116, 217, 0.15);
-  color: #5794F2;
+  background-color: rgba(50, 116, 217, 0.16);
+  color: #68A0F6;
+  border: 1px solid rgba(50, 116, 217, 0.25);
 }
 
 .card-heading {
@@ -222,7 +328,7 @@ body.mobile-viewport {
   padding-top: 6px;
 }
 
-/* Лента Vibes */
+/* ================= 4. ЛЕНТА VIBES (ПОЛУПРОЗРАЧНЫЕ ЭЛЕМЕНТЫ) ================= */
 .feed-viewport {
   background-color: #000000;
 }
@@ -232,7 +338,7 @@ body.mobile-viewport {
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 56px);
+  height: calc(100% - 58px);
   overflow: hidden;
 }
 
@@ -245,41 +351,41 @@ body.mobile-viewport {
 .video-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(11,12,14,0.85) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(9, 10, 12, 0.88) 100%);
   pointer-events: none;
 }
 
-/* Правая панель действий и параметров (Фото 1: красивое выравнивание капсул) */
+/* Правый сайдбар с полупрозрачными капсулами (Glassmorphism) */
 .feed-sidebar {
   position: absolute;
   right: 14px;
-  bottom: 78px;
+  bottom: 82px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   z-index: 10;
 }
 
 .param-badge {
-  width: 64px;
-  background: rgba(18, 20, 24, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  padding: 6px 4px;
+  width: 68px;
+  background: rgba(18, 21, 26, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 7px 4px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .param-label {
   display: block;
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: #B0B5C0;
   margin-bottom: 2px;
 }
 
@@ -287,24 +393,25 @@ body.mobile-viewport {
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: var(--text-primary);
-  font-family: 'JetBrains Mono', sans-serif;
+  color: #FFFFFF;
+  font-family: 'JetBrains Mono', monospace;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .action-circle {
   width: 48px;
   height: 48px;
-  background: rgba(18, 20, 24, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 21, 26, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: transform 0.15s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .action-circle:active {
@@ -323,11 +430,14 @@ body.mobile-viewport {
   color: #FFFFFF;
   margin-top: 3px;
   font-family: 'JetBrains Mono', monospace;
+  text-align: center;
 }
 
 .next-btn {
-  background: var(--grafana-blue);
+  background: linear-gradient(135deg, rgba(50, 116, 217, 0.85) 0%, rgba(32, 84, 166, 0.85) 100%);
   border-color: rgba(255, 255, 255, 0.25);
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(50, 116, 217, 0.4);
 }
 
 .arrow-icon {
@@ -336,148 +446,175 @@ body.mobile-viewport {
   fill: #FFFFFF;
 }
 
-/* Описание внизу экрана ленты */
+/* Полупрозрачная панель описания внизу ленты */
 .feed-bottom-info {
   position: absolute;
   left: 14px;
-  right: 88px;
-  bottom: 18px;
+  right: 92px;
+  bottom: 20px;
   z-index: 10;
+  padding: 10px 12px;
+  background: rgba(11, 13, 16, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 }
 
 .feed-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   margin-bottom: 4px;
   color: #FFFFFF;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
 }
 
 .feed-desc-clamp {
   font-size: 12px;
   line-height: 1.4;
-  color: #D8D9DA;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+  color: #D3D6DC;
 }
 
-.more-link {
-  color: #5794F2;
-  font-weight: 700;
-  text-decoration: none;
-  margin-left: 4px;
-}
-
-/* Страница добавления / Редактор (Фото 2: полностью одинаковые поля) */
+/* ================= 5. ЧЕРНОВИК / ПУБЛИКАЦИЯ (МЕДИА ДРУГ ПОД ДРУГОМ) ================= */
 .editor-form-stack {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-section-media, .form-section-fields {
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
+.form-section-media {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-section-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .field-box {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .field-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-/* Единый стиль дропзоны для обоих файлов */
-.file-input {
-  width: 100%;
-  background-color: var(--bg-input);
-  border: 1px dashed var(--border-dashed);
-  border-radius: 5px;
-  padding: 8px 10px;
-  color: var(--text-secondary);
-  font-size: 12px;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.file-input:hover {
-  border-color: var(--grafana-blue);
-  background-color: var(--bg-panel);
-}
-
-.file-input::-webkit-file-upload-button {
-  background: var(--bg-panel-hover);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
-  color: var(--text-primary);
-  padding: 5px 12px;
   font-size: 11px;
   font-weight: 600;
-  margin-right: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.file-input::-webkit-file-upload-button:hover {
-  background: #2a3038;
-  border-color: var(--grafana-blue);
+  letter-spacing: 0.2px;
+  color: var(--text-secondary);
 }
 
 .text-input, .textarea-input {
   width: 100%;
   background-color: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
   padding: 9px 12px;
   color: var(--text-primary);
   font-size: 13px;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .text-input:focus, .textarea-input:focus {
-  border-color: var(--border-focus);
+  border-color: var(--border-active);
+  box-shadow: 0 0 8px var(--grafana-blue-glow);
 }
 
 .textarea-input {
   resize: none;
   line-height: 1.45;
-  font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
 }
 
-.next-step-btn {
-  width: 100%;
-  height: 42px;
-  background-color: #1A1D21;
+/* Карточки предпросмотра медиа (друг под другом) */
+.media-preview-card {
+  background: var(--bg-panel);
   border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: not-allowed;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Нижняя панель навигации (Tabs) */
+.media-preview-label {
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.media-preview-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+  background-color: #030405;
+}
+
+.media-preview-video {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+  background-color: #030405;
+}
+
+.draft-component-header {
+  padding: 10px 12px;
+  background: rgba(50, 116, 217, 0.1);
+  border: 1px solid rgba(50, 116, 217, 0.25);
+  border-radius: 6px;
+  font-size: 13px;
+  color: #DDE8FC;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 42px;
+  background: linear-gradient(135deg, #3274D9 0%, #2054A6 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(50, 116, 217, 0.35);
+  transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(50, 116, 217, 0.55);
+}
+
+.submit-btn.publish-color {
+  background: linear-gradient(135deg, #2EA44F 0%, #1F7A38 100%);
+  box-shadow: 0 4px 14px rgba(46, 164, 79, 0.35);
+}
+
+.submit-btn.publish-color:hover {
+  box-shadow: 0 6px 18px rgba(46, 164, 79, 0.55);
+}
+
+/* ================= 6. ПАНЕЛЬ ВКЛАДОК (ТАБЫ) ================= */
 .bottom-tab-bar {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 56px;
-  background-color: var(--bg-panel);
+  height: 58px;
+  background: var(--bg-panel-translucent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid var(--border-subtle);
   display: flex;
   justify-content: space-around;
@@ -498,12 +635,12 @@ body.mobile-viewport {
 }
 
 .tab-item.active {
-  color: var(--grafana-blue);
+  color: #5794F2;
 }
 
 .tab-icon {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
   stroke-width: 2;
   fill: none;

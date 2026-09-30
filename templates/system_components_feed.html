@@ -8,21 +8,25 @@
 </head>
 <body class="mobile-viewport feed-viewport">
   <div class="video-container">
-    <video class="bg-video" autoplay loop muted playsinline src="{{ .Component.VideoURL }}"></video>
+    <video class="bg-video" autoplay loop muted playsinline 
+           src="{{ .VideoURL }}" 
+           onerror="this.onerror=null; this.src='/static/video/defaultVideo.mp4';">
+    </video>
     <div class="video-overlay"></div>
 
+    <!-- Сайдбар с полупрозрачными размытыми капсулами -->
     <div class="feed-sidebar">
       <div class="sidebar-item param-badge">
-        <span class="param-label">Группа</span>
-        <span class="param-val">{{ .Component.Grouping }}</span>
+        <span class="param-label">ГРУППА</span>
+        <span class="param-val">{{ .Grouping }}</span>
       </div>
 
       <div class="sidebar-item param-badge">
-        <span class="param-label">Приоритет</span>
-        <span class="param-val">{{ .Component.Priority }}</span>
+        <span class="param-label">ПРИОРИТЕТ</span>
+        <span class="param-val">{{ .Priority }}</span>
       </div>
 
-      <div class="sidebar-item like-container" data-likes="{{ .LikesCSV }}">
+      <div class="sidebar-item like-container">
         <div class="action-circle">
           <svg class="heart-icon" viewBox="0 0 24 24">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -31,18 +35,18 @@
         <span class="action-count">{{ .LikesCount }}</span>
       </div>
 
-      <a href="{{ .NextURL }}" class="sidebar-item action-circle next-btn" aria-label="следующий компонент">
+      <a href="{{ .NextURL }}" class="sidebar-item action-circle next-btn" aria-label="Следующий компонент">
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <path d="M7 10l5 5 5-5z"/>
         </svg>
       </a>
     </div>
 
+    <!-- Полупрозрачная плашка внизу -->
     <div class="feed-bottom-info">
-      <h2 class="feed-title">{{ .Component.Title }}</h2>
+      <h2 class="feed-title">{{ .Name }}</h2>
       <div class="feed-desc-clamp">
-        <span>{{ .Component.Description }}</span>
-        <a href="#more" class="more-link">Ещё</a>
+        <span>{{ .Description }}</span>
       </div>
     </div>
   </div>
@@ -54,7 +58,7 @@
     </a>
     <a href="/system-components/editor" class="tab-item {{ if eq .ActiveTab "editor" }}active{{ end }}">
       <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-      <span>Добавить</span>
+      <span>Черновик</span>
     </a>
     <a href="/system-components" class="tab-item {{ if eq .ActiveTab "grid" }}active{{ end }}">
       <svg class="tab-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>

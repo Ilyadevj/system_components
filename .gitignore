@@ -1,0 +1,24 @@
+cat << 'EOF' > .gitignore
+
+.DS_Store
+
+
+.env
+
+
+postgres-data/
+minio-data/
+
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+system_components
+
+
+.idea/
+.vscode/
+EOF

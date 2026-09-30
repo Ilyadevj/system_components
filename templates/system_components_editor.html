@@ -3,53 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Добавление компонента</title>
+  <title>{{ if .HasDraft }}Публикация компонента{{ else }}Создание черновика{{ end }}</title>
   <link rel="stylesheet" href="/static/styles/system_components_style.css">
 </head>
 <body class="mobile-viewport">
   <header class="app-header">
-    <h1 class="header-title">Новый компонент</h1>
+    <div class="header-title-box">
+      <span class="header-indicator"></span>
+      <h1 class="header-title">{{ if .HasDraft }}Публикация компонента{{ else }}Новый компонент{{ end }}</h1>
+    </div>
   </header>
 
   <main class="page-content scrollable">
-    <form class="editor-form-stack">
+    {{ if not .HasDraft }}
+    <!-- ЭТАП 1: Черновика нет. Сверху поля для фото и видео ДРУГ ПОД ДРУГОМ -> Далее -->
+    <form method="POST" action="/system-components/draft" class="editor-form-stack">
       <div class="form-section-media">
         <div class="field-box">
-          <label class="field-label">Изображение компонента</label>
-          <input type="file" accept="image/*" class="file-input">
+          <label class="field-label">Ссылка на изображение компонента *</label>
+          <input type="text" name="image_url" class="text-input" 
+                 placeholder="http://localhost:9000/system-components/..." 
+                 value="http://localhost:9000/system-components/gateway.png" required>
         </div>
+
         <div class="field-box">
-          <label class="field-label">Демонстрационное видео</label>
-          <input type="file" accept="video/mp4" class="file-input">
+          <label class="field-label">Ссылка на демонстрационное видео *</label>
+          <input type="text" name="video_url" class="text-input" 
+                 placeholder="http://localhost:9000/system-components/..." 
+                 value="http://localhost:9000/system-components/gateway.mp4" required>
         </div>
       </div>
 
       <div class="form-section-fields">
         <div class="field-box">
-          <label class="field-label">Название компонента</label>
-          <input type="text" class="text-input" value="{{ .Draft.Title }}">
-        </div>
-
-        <div class="field-box">
-          <label class="field-label">Описание</label>
-          <textarea class="textarea-input" rows="3">{{ .Draft.Description }}</textarea>
-        </div>
-
-        <div class="field-box">
-          <label class="field-label">Группировка</label>
-          <input type="text" class="text-input" value="{{ .Draft.Grouping }}">
-        </div>
-
-        <div class="field-box">
-          <label class="field-label">Приоритет</label>
-          <input type="number" class="text-input" value="{{ .Draft.Priority }}">
+          <label class="field-label">Название компонента *</label>
+          <input type="text" name="name" class="text-input" placeholder="Например: Кэш-память Memcached" required>
         </div>
       </div>
 
       <div class="action-footer">
-        <button type="button" class="next-step-btn" disabled>Далее</button>
+        <button type="submit" class="submit-btn">Далее →</button>
       </div>
     </form>
+
+    {{ else }}
+    <!-- ЭТАП 2: Черновик уже есть. Сверху фото и видео ДРУГ ПОД ДРУГОМ -> Опубликовать -->
+    <form method="POST" action="/system-components/publish" class="editor-form-stack">
+      <input type="hidden" name="id" value="{{ .Draft.ID }}">
+
+      <div class="draft-component-header">
+        Черновик: <b>{{ .Draft.Name }}</b>
+      </div>
+
+      <!-- Превью фото и видео друг под другом -->
+      <div class="form-section-media">
+        <div class="media-preview-card">
+          <div class="media-preview-label">Изображение компонента</div>
+          <img src="{{ .Draft.ImageURL }}" 
+               alt="{{ .Draft.Name }}" 
+               class="media-preview-img" 
+               onerror="this.onerror=null; this.src='/static/img/defaultIcon.png';">
+        </div>
+
+        <div class="media-preview-card">
+          <div class="media-preview-label">Демонстрационное видео</div>
+          <video class="media-preview-video" autoplay loop muted playsinline 
+                 src="{{ .Draft.VideoURL }}" 
+                 onerror="this.onerror=null; this.src='/static/video/defaultVideo.mp4';">
+          </video>
+        </div>
+      </div>
+
+      <!-- Поля для публикации -->
+      <div class="form-section-fields">
+        <div class="field-box">
+          <label class="field-label">Краткое описание компонента *</label>
+          <textarea name="description" class="textarea-input" rows="3" required placeholder="Опишите назначение и роль компонента в системе..."></textarea>
+        </div>
+
+        <div class="field-box">
+          <label class="field-label">Группировка (по предметной области: Кэш или БД) *</label>
+          <input type="text" name="grouping" class="text-input" required placeholder="Кэш, БД, Бэкенд">
+        </div>
+
+        <div class="field-box">
+          <label class="field-label">Приоритет обработки запроса (число) *</label>
+          <input type="number" name="priority" class="text-input" required min="1" max="10" value="1">
+        </div>
+      </div>
+
+      <div class="action-footer">
+        <button type="submit" class="submit-btn publish-color">Опубликовать</button>
+      </div>
+    </form>
+    {{ end }}
   </main>
 
   <nav class="bottom-tab-bar">
@@ -59,7 +106,7 @@
     </a>
     <a href="/system-components/editor" class="tab-item {{ if eq .ActiveTab "editor" }}active{{ end }}">
       <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-      <span>Добавить</span>
+      <span>Черновик</span>
     </a>
     <a href="/system-components" class="tab-item {{ if eq .ActiveTab "grid" }}active{{ end }}">
       <svg class="tab-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
