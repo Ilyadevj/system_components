@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Добавление компонента</title>
+  <link rel="stylesheet" href="/static/styles/system_components_style.css">
+</head>
+<body class="mobile-viewport">
+  <header class="app-header">
+    <h1 class="header-title">Новый компонент</h1>
+  </header>
+
+  <main class="page-content scrollable">
+    <form class="editor-form-stack">
+      <div class="form-section-media">
+        <div class="field-box">
+          <label class="field-label">Изображение компонента</label>
+          <input type="file" accept="image/*" class="file-input">
+        </div>
+        <div class="field-box">
+          <label class="field-label">Демонстрационное видео</label>
+          <input type="file" accept="video/mp4" class="file-input">
+        </div>
+      </div>
+
+      <div class="form-section-fields">
+        <div class="field-box">
+          <label class="field-label">Название компонента</label>
+          <input type="text" class="text-input" value="{{ .Draft.Title }}">
+        </div>
+
+        <div class="field-box">
+          <label class="field-label">Описание</label>
+          <textarea class="textarea-input" rows="3">{{ .Draft.Description }}</textarea>
+        </div>
+
+        <div class="field-box">
+          <label class="field-label">Группировка</label>
+          <input type="text" class="text-input" value="{{ .Draft.Grouping }}">
+        </div>
+
+        <div class="field-box">
+          <label class="field-label">Приоритет</label>
+          <input type="number" class="text-input" value="{{ .Draft.Priority }}">
+        </div>
+      </div>
+
+      <div class="action-footer">
+        <button type="button" class="next-step-btn" disabled>Далее</button>
+      </div>
+    </form>
+  </main>
+
+  <nav class="bottom-tab-bar">
+    <a href="/system-components/feed" class="tab-item {{ if eq .ActiveTab "feed" }}active{{ end }}">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span>Лента</span>
+    </a>
+    <a href="/system-components/editor" class="tab-item {{ if eq .ActiveTab "editor" }}active{{ end }}">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span>Добавить</span>
+    </a>
+    <a href="/system-components" class="tab-item {{ if eq .ActiveTab "grid" }}active{{ end }}">
+      <svg class="tab-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Каталог</span>
+    </a>
+  </nav>
+</body>
+</html>

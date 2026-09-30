@@ -1,0 +1,518 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  --bg-canvas: #0B0C0E;
+  --bg-panel: #141619;
+  --bg-panel-hover: #1F2329;
+  --bg-input: #0F1012;
+  --border-subtle: #2C3235;
+  --border-dashed: #3E444E;
+  --border-focus: #3274D9;
+  --text-primary: #EBEDEF;
+  --text-secondary: #8E949E;
+  --text-muted: #525862;
+  --grafana-blue: #3274D9;
+  --grafana-blue-hover: #4686EB;
+  --grafana-orange: #FF780A;
+  --grafana-red: #E02F44;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.mobile-viewport {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  width: 100vw;
+  max-width: 414px;
+  height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 45px rgba(0, 0, 0, 0.9);
+}
+
+/* Шапка */
+.app-header {
+  height: 50px;
+  background-color: var(--bg-panel);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+}
+
+.page-content.scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 72px;
+}
+
+/* Фильтр: кастомные чекбоксы Grafana */
+.filter-box {
+  background-color: var(--bg-panel);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-input);
+  border-radius: 3px;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+  background-color: var(--grafana-blue);
+  border-color: var(--grafana-blue);
+}
+
+.checkbox-label input[type="checkbox"]:checked::before {
+  content: "";
+  width: 8px;
+  height: 4px;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #FFFFFF;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.apply-btn {
+  background-color: var(--grafana-blue);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 7px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.apply-btn:hover {
+  background-color: var(--grafana-blue-hover);
+}
+
+/* Каталог: Сетка карточек */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 14px;
+}
+
+.grid-card {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.grid-card:hover {
+  border-color: #444c57;
+  transform: translateY(-2px);
+}
+
+.card-img-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background-color: #050608;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-likes-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(11, 12, 14, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--grafana-red);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+
+.card-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.card-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  align-self: flex-start;
+  background-color: rgba(50, 116, 217, 0.15);
+  color: #5794F2;
+}
+
+.card-heading {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.card-priority {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-secondary);
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 6px;
+}
+
+/* Лента Vibes */
+.feed-viewport {
+  background-color: #000000;
+}
+
+.video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 56px);
+  overflow: hidden;
+}
+
+.bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(11,12,14,0.85) 100%);
+  pointer-events: none;
+}
+
+/* Правая панель действий и параметров (Фото 1: красивое выравнивание капсул) */
+.feed-sidebar {
+  position: absolute;
+  right: 14px;
+  bottom: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.param-badge {
+  width: 64px;
+  background: rgba(18, 20, 24, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.param-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.param-val {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', sans-serif;
+}
+
+.action-circle {
+  width: 48px;
+  height: 48px;
+  background: rgba(18, 20, 24, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.action-circle:active {
+  transform: scale(0.92);
+}
+
+.heart-icon {
+  width: 22px;
+  height: 22px;
+  fill: var(--grafana-red);
+}
+
+.action-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-top: 3px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.next-btn {
+  background: var(--grafana-blue);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.arrow-icon {
+  width: 24px;
+  height: 24px;
+  fill: #FFFFFF;
+}
+
+/* Описание внизу экрана ленты */
+.feed-bottom-info {
+  position: absolute;
+  left: 14px;
+  right: 88px;
+  bottom: 18px;
+  z-index: 10;
+}
+
+.feed-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #FFFFFF;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+}
+
+.feed-desc-clamp {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #D8D9DA;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+}
+
+.more-link {
+  color: #5794F2;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+/* Страница добавления / Редактор (Фото 2: полностью одинаковые поля) */
+.editor-form-stack {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-section-media, .form-section-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Единый стиль дропзоны для обоих файлов */
+.file-input {
+  width: 100%;
+  background-color: var(--bg-input);
+  border: 1px dashed var(--border-dashed);
+  border-radius: 5px;
+  padding: 8px 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.file-input:hover {
+  border-color: var(--grafana-blue);
+  background-color: var(--bg-panel);
+}
+
+.file-input::-webkit-file-upload-button {
+  background: var(--bg-panel-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-primary);
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.file-input::-webkit-file-upload-button:hover {
+  background: #2a3038;
+  border-color: var(--grafana-blue);
+}
+
+.text-input, .textarea-input {
+  width: 100%;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 9px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.text-input:focus, .textarea-input:focus {
+  border-color: var(--border-focus);
+}
+
+.textarea-input {
+  resize: none;
+  line-height: 1.45;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.next-step-btn {
+  width: 100%;
+  height: 42px;
+  background-color: #1A1D21;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: not-allowed;
+}
+
+/* Нижняя панель навигации (Tabs) */
+.bottom-tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 56px;
+  background-color: var(--bg-panel);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.tab-item.active {
+  color: var(--grafana-blue);
+}
+
+.tab-icon {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.empty-state {
+  grid-column: span 2;
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 14px;
+  font-size: 13px;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Каталог компонентов</title>
+  <link rel="stylesheet" href="/static/styles/system_components_style.css">
+</head>
+<body class="mobile-viewport">
+  <header class="app-header">
+    <h1 class="header-title">Компоненты системы</h1>
+  </header>
+
+  <main class="page-content scrollable">
+    <form method="GET" action="/system-components" class="filter-box">
+      <div class="filter-row">
+        {{ range .FilterItems }}
+        <label class="checkbox-label">
+          <input type="checkbox" name="groups" value="{{ .Name }}" {{ if .IsChecked }}checked{{ end }}>
+          <span>{{ .Name }}</span>
+        </label>
+        {{ end }}
+        <button type="submit" class="apply-btn">Применить</button>
+      </div>
+    </form>
+
+    <div class="cards-grid">
+      {{ range .Cards }}
+      <a href="/system-components/feed?id={{ .ID }}" class="grid-card">
+        <div class="card-img-wrapper">
+          <img src="{{ .ImageURL }}" alt="{{ .Title }}" class="card-img">
+          <span class="card-likes-badge">♥ {{ .LikesCount }}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-badge">{{ .Grouping }}</div>
+          <h2 class="card-heading">{{ .Title }}</h2>
+          <div class="card-priority">Приоритет: {{ .Priority }}</div>
+        </div>
+      </a>
+      {{ else }}
+      <div class="empty-state">Нет опубликованны� компонентов по выбранному фильтру</div>
+      {{ end }}
+    </div>
+  </main>
+
+  <nav class="bottom-tab-bar">
+    <a href="/system-components/feed" class="tab-item {{ if eq .ActiveTab "feed" }}active{{ end }}">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span>Лента</span>
+    </a>
+    <a href="/system-components/editor" class="tab-item {{ if eq .ActiveTab "editor" }}active{{ end }}">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span>Добавить</span>
+    </a>
+    <a href="/system-components" class="tab-item {{ if eq .ActiveTab "grid" }}active{{ end }}">
+      <svg class="tab-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Каталог</span>
+    </a>
+  </nav>
+</body>
+</html>
