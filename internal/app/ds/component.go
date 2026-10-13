@@ -13,14 +13,12 @@ const (
 type Component struct {
 	ID          uint            `gorm:"primaryKey"`
 	Name        string          `gorm:"type:varchar(100);not null"`
-	Description *string         `gorm:"type:text"` // необязательное в черновике
+	Description *string         `gorm:"type:text"`
 	Status      ComponentStatus `gorm:"type:varchar(20);not null"`
 
-	// URL обязательны
 	ImageURL string `gorm:"type:varchar(255);not null"`
 	VideoURL string `gorm:"type:varchar(255);not null"`
 
-	// 2 поля по теме (в черновике NULL, заполняются при публикации)
 	Priority *int    `gorm:"type:int;column:priority"`
 	Grouping *string `gorm:"type:varchar(50);column:grouping"`
 

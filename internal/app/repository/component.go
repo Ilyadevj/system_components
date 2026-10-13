@@ -50,7 +50,6 @@ func (r *Repository) GetAvailableGroups() []string {
 	return groups
 }
 
-// 3. Получение СТРОГО 1 СТРОКИ для Ленты с учетом пропусков ID (ORM)
 func (r *Repository) GetFeedComponent(currentID int, isNext bool) (*ComponentWithLikes, error) {
 	var component ds.Component
 	var err error
@@ -65,7 +64,6 @@ func (r *Repository) GetFeedComponent(currentID int, isNext bool) (*ComponentWit
 			First(&component).Error
 	}
 
-	// Зацикливание: если дошли до конца или id не задан
 	if errors.Is(err, gorm.ErrRecordNotFound) || currentID == 0 {
 		err = r.db.Where("status = ?", ds.StatusPublished).
 			Order("id ASC").
@@ -86,7 +84,6 @@ func (r *Repository) GetFeedComponent(currentID int, isNext bool) (*ComponentWit
 	}, nil
 }
 
-// 4. Поиск черновика пользователя
 func (r *Repository) GetUserDraft(creatorID uint) (*ds.Component, error) {
 	var draft ds.Component
 	err := r.db.Where("creator_id = ? AND status = ?", creatorID, ds.StatusDraft).First(&draft).Error
@@ -99,7 +96,6 @@ func (r *Repository) GetUserDraft(creatorID uint) (*ds.Component, error) {
 	return &draft, nil
 }
 
-// 5. Создание черновика (поля темы и описание NULL)
 func (r *Repository) CreateDraft(name, imgURL, videoURL string, creatorID uint) (*ds.Component, error) {
 	draft := ds.Component{
 		Name:      name,
@@ -113,7 +109,6 @@ func (r *Repository) CreateDraft(name, imgURL, videoURL string, creatorID uint) 
 	return &draft, err
 }
 
-// 6. Публикация карточки (заполнение описания, приоритета и группы)
 func (r *Repository) PublishComponent(id uint, description, grouping string, priority int) error {
 	now := time.Now()
 	return r.db.Model(&ds.Component{}).
