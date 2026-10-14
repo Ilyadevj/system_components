@@ -19,7 +19,16 @@ func main() {
 		logrus.Fatalf("Database connection error: %v", err)
 	}
 
-	repo := repository.NewRepository(db)
+	repo, err := repository.NewRepository(db, &repository.RepositorySettings{
+		MinioEndpoint:   cfg.MinioEndpoint,
+		MinioAccessKey:  cfg.MinioAccessKey,
+		MinioSecretKey:  cfg.MinioSecretKey,
+		MinioBucketName: cfg.MinioBucketName,
+	})
+	if err != nil {
+		logrus.Fatalf("Repository initialization error: %v", err)
+	}
+
 	h := handler.NewHandler(repo)
 	router := gin.Default()
 
