@@ -11,6 +11,13 @@ func (User) TableName() string {
 }
 
 type UserAuthRequest struct {
-	Login    string `json:"login" form:"login" binding:"required"`
-	Password string `json:"password" form:"password" binding:"required"`
+	Login    string `json:"login" form:"login" binding:"required" example:"creator_dev"`
+	Password string `json:"password" form:"password" binding:"required" example:"secret_password1"`
+}
+
+type UserLoginResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int64  `json:"expires_in"`
+	User        User   `json:"user"`
 }

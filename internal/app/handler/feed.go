@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// HTML-обработчик (ЛР2)
 func (h *Handler) GetComponentFeed(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Query("id"))
 	isNext := c.Query("next") == "true"
@@ -53,14 +52,21 @@ func (h *Handler) GetComponentFeed(c *gin.Context) {
 	})
 }
 
-// ==================== МЕТОДЫ REST API (ЛР3) ====================
-
-// 2. GET /api/system-components/feed — получение 1 карточки ленты с признаками 0/1 (is_liked и is_creator)
+// GetComponentFeedAPI godoc
+// @Summary Получение одной карточки для ленты
+// @Description Возвращает карточку ленты (первую без параметров или следующую по ?id=1&next=true)
+// @Tags SystemComponents
+// @Produce json
+// @Param id query int false "Текущий ID компонента"
+// @Param next query bool false "Флаг перехода к следующей записи"
+// @Success 200 {object} ds.ComponentFeedSerializer
+// @Failure 404 {object} map[string]string
+// @Router /api/system-components/feed [get]
 func (h *Handler) GetComponentFeedAPI(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Query("id"))
 	isNext := c.Query("next") == "true"
 
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
 	item, err := h.repo.GetFeedComponentAPI(id, isNext, userID)
 	if err != nil || item == nil {
 		h.errorHandlerAPI(c, http.StatusNotFound, fmt.Errorf("опубликованные записи не найдены"))
@@ -70,7 +76,19 @@ func (h *Handler) GetComponentFeedAPI(c *gin.Context) {
 	c.JSON(http.StatusOK, item)
 }
 
-// 7. POST /api/system-components/:id/like — постановка (1) или отмена (0) лайка от текущего пользователя
+// LikeComponentAPI godoc
+// @Summary Постановка или отмена лайка
+// @Description Ставит (1) или убирает (0) лайк от имени авторизованного пользователя
+// @Tags SystemComponents
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "ID компонента"
+// @Param request body ds.LikeRequest true "Значение лайка (0 или 1)"
+// @Success 200 {object} map[string]interface{}
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Router /api/system-components/{id}/like [post]
 func (h *Handler) LikeComponentAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {
@@ -89,7 +107,7 @@ func (h *Handler) LikeComponentAPI(c *gin.Context) {
 		return
 	}
 
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
 	likesCount, err := h.repo.SetComponentLike(uint(id), userID, req.Like)
 	if err != nil {
 		h.errorHandlerAPI(c, http.StatusNotFound, err)

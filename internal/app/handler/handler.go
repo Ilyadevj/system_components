@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"system_components/internal/app/config"
+	"system_components/internal/app/redis"
 	"system_components/internal/app/repository"
 
 	"github.com/gin-gonic/gin"
@@ -11,17 +13,27 @@ import (
 )
 
 type Handler struct {
-	repo *repository.Repository
+	repo  *repository.Repository
+	redis *redis.Client
+	cfg   *config.Config
 }
 
-func NewHandler(repo *repository.Repository) *Handler {
-	return &Handler{repo: repo}
+func NewHandler(repo *repository.Repository, redisClient *redis.Client, cfg *config.Config) *Handler {
+	return &Handler{
+		repo:  repo,
+		redis: redisClient,
+		cfg:   cfg,
+	}
 }
 
-const CurrentUserID uint = 1
-
-func GetCurrentUserID() uint {
-	return CurrentUserID
+// Возвращает ID авторизованного пользователя из контекста Gin (0 — если гость)
+func GetCurrentUserID(c *gin.Context) uint {
+	if val, exists := c.Get(ctxUserIDKey); exists {
+		if id, ok := val.(uint); ok {
+			return id
+		}
+	}
+	return 0
 }
 
 func (h *Handler) ErrorResponse(c *gin.Context, statusCode int, message string) {

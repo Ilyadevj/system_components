@@ -9,9 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// HTML-обработчик (ЛР2)
 func (h *Handler) GetComponentEditor(c *gin.Context) {
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
+	if userID == 0 {
+		userID = 1
+	}
 	draft, err := h.repo.GetUserDraft(userID)
 	if err != nil {
 		h.ErrorResponse(c, http.StatusInternalServerError, "Ошибка черновика: "+err.Error())
@@ -25,9 +27,11 @@ func (h *Handler) GetComponentEditor(c *gin.Context) {
 	})
 }
 
-// HTML-обработчик (ЛР2)
 func (h *Handler) CreateDraft(c *gin.Context) {
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
+	if userID == 0 {
+		userID = 1
+	}
 	existingDraft, _ := h.repo.GetUserDraft(userID)
 	if existingDraft != nil {
 		c.Redirect(http.StatusFound, "/system-components/editor")
@@ -49,7 +53,6 @@ func (h *Handler) CreateDraft(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/system-components/editor")
 }
 
-// HTML-обработчик (ЛР2)
 func (h *Handler) PublishComponent(c *gin.Context) {
 	idStr := c.PostForm("id")
 	id, err := strconv.Atoi(idStr)
@@ -66,11 +69,19 @@ func (h *Handler) PublishComponent(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/system-components")
 }
 
-// ==================== МЕТОДЫ REST API (ЛР3) ====================
-
-// 3. GET /api/system-components/draft — получение черновика текущего пользователя (без id в URL)
+// GetDraftAPI godoc
+// @Summary Получение активного черновика пользователя
+// @Description Возвращает поля черновика текущего авторизованного создателя
+// @Tags SystemComponents
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} ds.Component
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/system-components/draft [get]
 func (h *Handler) GetDraftAPI(c *gin.Context) {
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
 	draft, err := h.repo.GetUserDraft(userID)
 	if err != nil {
 		h.errorHandlerAPI(c, http.StatusInternalServerError, err)
@@ -84,9 +95,24 @@ func (h *Handler) GetDraftAPI(c *gin.Context) {
 	c.JSON(http.StatusOK, draft)
 }
 
-// 4. POST /api/system-components — создание черновика (только name + файлы image и video в MinIO)
+// CreateDraftAPI godoc
+// @Summary Добавление новой услуги (создание черновика)
+// @Description Создает черновик с автозаполнением создателя из JWT и загружает картинку и видео в MinIO
+// @Tags SystemComponents
+// @Security BearerAuth
+// @Accept mpfd
+// @Produce json
+// @Param name formData string true "Название компонента"
+// @Param image formData file false "Изображение компонента"
+// @Param video formData file false "Демонстрационное видео"
+// @Success 201 {object} ds.Component
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Router /api/system-components [post]
 func (h *Handler) CreateDraftAPI(c *gin.Context) {
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
 
 	existingDraft, err := h.repo.GetUserDraft(userID)
 	if err != nil {
@@ -98,7 +124,6 @@ func (h *Handler) CreateDraftAPI(c *gin.Context) {
 		return
 	}
 
-	// Читаем до 20 МБ multipart-формы (для картинки и короткого видео)
 	if err := c.Request.ParseMultipartForm(20 << 20); err != nil {
 		h.errorHandlerAPI(c, http.StatusBadRequest, err)
 		return
@@ -133,6 +158,7 @@ func (h *Handler) CreateDraftAPI(c *gin.Context) {
 	defaultImg := "/static/img/defaultIcon.png"
 	defaultVideo := "/static/video/defaultVideo.mp4"
 
+	// Автозаполнение CreatorID = userID из JWT
 	draft, err := h.repo.CreateDraft(name, defaultImg, defaultVideo, userID)
 	if err != nil {
 		h.errorHandlerAPI(c, http.StatusInternalServerError, err)
@@ -168,7 +194,20 @@ func (h *Handler) CreateDraftAPI(c *gin.Context) {
 	c.JSON(http.StatusCreated, draft)
 }
 
-// 5. PUT /api/system-components/:id — публикация черновика (смена статуса и заполнение полей темы)
+// PublishComponentAPI godoc
+// @Summary Публикация черновика услуги
+// @Description Переводит черновик в статус published и обновляет поля описания, группировки и приоритета
+// @Tags SystemComponents
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "ID черновика компонента"
+// @Param request body ds.PublishComponentRequest true "Поля публикации"
+// @Success 200 {object} ds.Component
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Router /api/system-components/{id} [put]
 func (h *Handler) PublishComponentAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {

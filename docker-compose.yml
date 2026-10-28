@@ -1,5 +1,4 @@
 services:
-
   postgres:
     image: postgres:17
     container_name: system_components_postgres
@@ -32,6 +31,16 @@ services:
     volumes:
       - minio-data:/data
 
+  redis:
+    image: redis:7-alpine
+    container_name: system_components_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
 volumes:
   postgres-data:
   minio-data:
+  redis-data:

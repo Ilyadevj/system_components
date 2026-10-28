@@ -4,8 +4,12 @@ import (
 	"system_components/internal/app/config"
 	"system_components/internal/app/handler"
 
+	_ "system_components/docs"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Application struct {
@@ -25,6 +29,9 @@ func NewApp(c *config.Config, r *gin.Engine, h *handler.Handler) *Application {
 func (a *Application) RunApp() {
 	logrus.Info("Server is starting...")
 
+	// Swagger UI
+	a.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// Статические файлы и шаблоны (ЛР1–ЛР2)
 	a.Router.Static("/static", "./resources")
 	a.Router.LoadHTMLGlob("templates/*")
@@ -41,26 +48,31 @@ func (a *Application) RunApp() {
 	a.Router.POST("/system-components/publish", a.Handler.PublishComponent)
 	a.Router.POST("/system-components/delete", a.Handler.DeleteComponent)
 
-	// ==================== 10 МЕТОДОВ REST API (ЛР3) ====================
+	// ==================== 10 МЕТОДОВ REST API (ЛР3–ЛР4) ====================
 	apiGroup := a.Router.Group("/api")
 	{
-		// Домен услуги (system-components) — 7 методов:
-		apiGroup.GET("/system-components", a.Handler.GetComponentsGridAPI)          // 1. Список с фильтрацией
-		apiGroup.GET("/system-components/feed", a.Handler.GetComponentFeedAPI)      // 2. Лента (1 карточка)
-		apiGroup.GET("/system-components/draft", a.Handler.GetDraftAPI)             // 3. Черновик пользователя
-		apiGroup.POST("/system-components", a.Handler.CreateDraftAPI)               // 4. Добавление черновика + файлы в MinIO
-		apiGroup.PUT("/system-components/:id", a.Handler.PublishComponentAPI)       // 5. Публикация черновика
-		apiGroup.DELETE("/system-components/:id", a.Handler.DeleteComponentAPI)     // 6. Мягкое удаление (soft delete)
-		apiGroup.POST("/system-components/:id/like", a.Handler.LikeComponentAPI)    // 7. Постановка/отмена лайка (0/1)
+		// Публичные методы чтения и входа (работают независимо от токена/куки)
+		apiGroup.GET("/system-components", a.Handler.OptionalAuthMiddleware(), a.Handler.GetComponentsGridAPI)
+		apiGroup.GET("/system-components/feed", a.Handler.OptionalAuthMiddleware(), a.Handler.GetComponentFeedAPI)
+		apiGroup.POST("/users/register", a.Handler.RegisterUserAPI)
+		apiGroup.POST("/users/login", a.Handler.LoginUserAPI)
 
-		// Домен пользователя (users) — 3 метода:
-		apiGroup.POST("/users/register", a.Handler.RegisterUserAPI)                 // 8. Регистрация
-		apiGroup.POST("/users/login", a.Handler.LoginUserAPI)                       // 9. Аутентификация (заглушка)
-		apiGroup.POST("/users/logout", a.Handler.LogoutUserAPI)                     // 10. Деавторизация (заглушка)
+		// Защищенные методы создателя (для гостя возвращают 401/403)
+		authGroup := apiGroup.Group("")
+		authGroup.Use(a.Handler.RequireAuthMiddleware())
+		{
+			authGroup.GET("/system-components/draft", a.Handler.GetDraftAPI)
+			authGroup.POST("/system-components", a.Handler.CreateDraftAPI)
+			authGroup.PUT("/system-components/:id", a.Handler.PublishComponentAPI)
+			authGroup.DELETE("/system-components/:id", a.Handler.DeleteComponentAPI)
+			authGroup.POST("/system-components/:id/like", a.Handler.LikeComponentAPI)
+			authGroup.POST("/users/logout", a.Handler.LogoutUserAPI)
+		}
 	}
 
 	serverAddr := ":8080"
 	logrus.Infof("Server listening on http://localhost%s", serverAddr)
+	logrus.Infof("Swagger UI available at http://localhost%s/swagger/index.html", serverAddr)
 	if err := a.Router.Run(serverAddr); err != nil {
 		logrus.Fatalf("Failed to run server: %v", err)
 	}

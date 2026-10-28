@@ -12,7 +12,6 @@ type FilterItemDTO struct {
 	IsChecked bool
 }
 
-// HTML-обработчик (ЛР2)
 func (h *Handler) GetComponentsGrid(c *gin.Context) {
 	selectedGroups := c.QueryArray("groups")
 
@@ -43,7 +42,6 @@ func (h *Handler) GetComponentsGrid(c *gin.Context) {
 	})
 }
 
-// HTML-обработчик (ЛР2)
 func (h *Handler) DeleteComponent(c *gin.Context) {
 	idStr := c.PostForm("id")
 	id, err := strconv.Atoi(idStr)
@@ -56,16 +54,21 @@ func (h *Handler) DeleteComponent(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/system-components")
 }
 
-// ==================== МЕТОДЫ REST API (ЛР3) ====================
-
-// 1. GET /api/system-components — список опубликованных услуг с фильтрацией и признаком 0/1 (is_creator)
+// GetComponentsGridAPI godoc
+// @Summary Получение списка опубликованных услуг (каталог)
+// @Description Доступно без авторизации и с авторизацией. Возвращает список компонентов с фильтрацией по слою.
+// @Tags SystemComponents
+// @Produce json
+// @Param grouping query string false "Фильтр по архитектурному слою (Бэкенд, Кэш, БД)"
+// @Success 200 {array} ds.ComponentGridSerializer
+// @Router /api/system-components [get]
 func (h *Handler) GetComponentsGridAPI(c *gin.Context) {
 	selectedGroups := c.QueryArray("groups")
 	if singleGroup := c.Query("grouping"); singleGroup != "" {
 		selectedGroups = append(selectedGroups, singleGroup)
 	}
 
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
 	items, err := h.repo.GetPublishedComponentsAPI(selectedGroups, userID)
 	if err != nil {
 		h.errorHandlerAPI(c, http.StatusInternalServerError, err)
@@ -75,7 +78,18 @@ func (h *Handler) GetComponentsGridAPI(c *gin.Context) {
 	c.JSON(http.StatusOK, items)
 }
 
-// 6. DELETE /api/system-components/:id — мягкое удаление услуги текущего пользователя (ORM)
+// DeleteComponentAPI godoc
+// @Summary Мягкое удаление услуги создателем
+// @Description Переводит статус компонента в deleted (только для авторизованного создателя)
+// @Tags SystemComponents
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID компонента"
+// @Success 200 {object} map[string]int
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/system-components/{id} [delete]
 func (h *Handler) DeleteComponentAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {
@@ -83,7 +97,7 @@ func (h *Handler) DeleteComponentAPI(c *gin.Context) {
 		return
 	}
 
-	userID := GetCurrentUserID()
+	userID := GetCurrentUserID(c)
 	if err := h.repo.SoftDeleteComponentORM(uint(id), userID); err != nil {
 		h.errorHandlerAPI(c, http.StatusNotFound, err)
 		return
