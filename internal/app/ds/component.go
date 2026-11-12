@@ -56,6 +56,8 @@ type ComponentFeedSerializer struct {
 	LikesCount  int64   `json:"likes_count"`
 	IsLiked     int     `json:"is_liked"`
 	IsCreator   int     `json:"is_creator"`
+	IsMine      int     `json:"is_mine"`
+	HasNext     int     `json:"has_next"`
 }
 
 

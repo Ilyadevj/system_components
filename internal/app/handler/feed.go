@@ -63,7 +63,7 @@ func (h *Handler) GetComponentFeedAPI(c *gin.Context) {
 	userID := GetCurrentUserID()
 	item, err := h.repo.GetFeedComponentAPI(id, isNext, userID)
 	if err != nil || item == nil {
-		h.errorHandlerAPI(c, http.StatusNotFound, fmt.Errorf("опубликованные записи не найдены"))
+		h.errorHandlerAPI(c, http.StatusNotFound, fmt.Errorf("компонент не найден"))
 		return
 	}
 

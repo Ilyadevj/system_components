@@ -107,20 +107,24 @@ func (r *Repository) GetFeedComponent(currentID int, isNext bool) (*ComponentWit
 			Order("id ASC").
 			Limit(1).
 			First(&component).Error
+		if err != nil {
+			return nil, err // Если следующего нет — возвращаем ошибку 404 (НЕ МОЖЕТ НАЙТИ)
+		}
 	} else if currentID > 0 && !isNext {
 		err = r.db.Where("status = ? AND id = ?", ds.StatusPublished, currentID).
 			First(&component).Error
-	}
-
-	if errors.Is(err, gorm.ErrRecordNotFound) || currentID == 0 {
+		if err != nil {
+			return nil, err // Если компонент по ID не найден — возвращаем ошибку 404 (НЕ МОЖЕТ НАЙТИ)
+		}
+	} else {
+		// Без параметров (currentID == 0) — возвращаем самую первую запись
 		err = r.db.Where("status = ?", ds.StatusPublished).
 			Order("id ASC").
 			Limit(1).
 			First(&component).Error
-	}
-
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var cnt int64
@@ -132,7 +136,7 @@ func (r *Repository) GetFeedComponent(currentID int, isNext bool) (*ComponentWit
 	}, nil
 }
 
-// 3.1. Лента для REST API (возвращает 1 карточку + 0/1 is_liked + 0/1 is_creator)
+// 3.1. Лента для REST API (возвращает 1 карточку + 0/1 is_liked + 0/1 is_creator + 0/1 is_mine + 0/1 has_next)
 func (r *Repository) GetFeedComponentAPI(currentID int, isNext bool, currentUserID uint) (*ds.ComponentFeedSerializer, error) {
 	item, err := r.GetFeedComponent(currentID, isNext)
 	if err != nil {
@@ -154,6 +158,16 @@ func (r *Repository) GetFeedComponentAPI(currentID int, isNext bool, currentUser
 		isCreator = 1
 	}
 
+	var nextCnt int64
+	_ = r.db.Model(&ds.Component{}).
+		Where("status = ? AND id > ?", ds.StatusPublished, item.ID).
+		Count(&nextCnt).Error
+
+	hasNext := 0
+	if nextCnt > 0 {
+		hasNext = 1
+	}
+
 	return &ds.ComponentFeedSerializer{
 		ID:          item.ID,
 		Name:        item.Name,
@@ -165,6 +179,8 @@ func (r *Repository) GetFeedComponentAPI(currentID int, isNext bool, currentUser
 		LikesCount:  item.LikesCount,
 		IsLiked:     isLiked,
 		IsCreator:   isCreator,
+		IsMine:      isCreator,
+		HasNext:     hasNext,
 	}, nil
 }
 
