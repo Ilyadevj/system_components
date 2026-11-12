@@ -13,15 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// @title System Components API
-// @version 1.0
-// @description Веб-сервис расчета времени отклика веб-приложения (system_components)
-// @host localhost:8080
-// @BasePath /
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Введите токен в формате: Bearer <ваш_jwt_токен>
+
 func main() {
 	ctx := context.Background()
 	cfg := config.Load()

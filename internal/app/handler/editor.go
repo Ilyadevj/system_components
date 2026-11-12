@@ -194,20 +194,6 @@ func (h *Handler) CreateDraftAPI(c *gin.Context) {
 	c.JSON(http.StatusCreated, draft)
 }
 
-// PublishComponentAPI godoc
-// @Summary Публикация черновика услуги
-// @Description Переводит черновик в статус published и обновляет поля описания, группировки и приоритета
-// @Tags SystemComponents
-// @Security BearerAuth
-// @Accept json
-// @Produce json
-// @Param id path int true "ID черновика компонента"
-// @Param request body ds.PublishComponentRequest true "Поля публикации"
-// @Success 200 {object} ds.Component
-// @Failure 400 {object} map[string]string
-// @Failure 401 {object} map[string]string
-// @Failure 403 {object} map[string]string
-// @Router /api/system-components/{id} [put]
 func (h *Handler) PublishComponentAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {

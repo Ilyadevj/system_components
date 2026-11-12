@@ -54,14 +54,7 @@ func (h *Handler) DeleteComponent(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/system-components")
 }
 
-// GetComponentsGridAPI godoc
-// @Summary Получение списка опубликованных услуг (каталог)
-// @Description Доступно без авторизации и с авторизацией. Возвращает список компонентов с фильтрацией по слою.
-// @Tags SystemComponents
-// @Produce json
-// @Param grouping query string false "Фильтр по архитектурному слою (Бэкенд, Кэш, БД)"
-// @Success 200 {array} ds.ComponentGridSerializer
-// @Router /api/system-components [get]
+
 func (h *Handler) GetComponentsGridAPI(c *gin.Context) {
 	selectedGroups := c.QueryArray("groups")
 	if singleGroup := c.Query("grouping"); singleGroup != "" {
@@ -78,18 +71,6 @@ func (h *Handler) GetComponentsGridAPI(c *gin.Context) {
 	c.JSON(http.StatusOK, items)
 }
 
-// DeleteComponentAPI godoc
-// @Summary Мягкое удаление услуги создателем
-// @Description Переводит статус компонента в deleted (только для авторизованного создателя)
-// @Tags SystemComponents
-// @Security BearerAuth
-// @Produce json
-// @Param id path int true "ID компонента"
-// @Success 200 {object} map[string]int
-// @Failure 401 {object} map[string]string
-// @Failure 403 {object} map[string]string
-// @Failure 404 {object} map[string]string
-// @Router /api/system-components/{id} [delete]
 func (h *Handler) DeleteComponentAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {
