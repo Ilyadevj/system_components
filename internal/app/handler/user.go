@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"system_components/internal/app/ds"
 	"time"
@@ -83,7 +84,7 @@ func (h *Handler) LoginUserAPI(c *gin.Context) {
 	_ = h.redis.SaveActiveUser(c.Request.Context(), user.ID, user.Login, h.cfg.JWTExpiresIn)
 
 	// Устанавливаем куку на случай проверки через вкладку Application -> Cookies
-	c.SetCookie("jwt_token", tokenStr, int(h.cfg.JWTExpiresIn.Seconds()), "/", "", false, true)
+	setSessionCookie(c, tokenStr, int(h.cfg.JWTExpiresIn.Seconds()))
 
 	c.JSON(http.StatusOK, ds.UserLoginResponse{
 		AccessToken: tokenStr,
@@ -109,10 +110,16 @@ func (h *Handler) LogoutUserAPI(c *gin.Context) {
 	if tokenStr != "" {
 		_ = h.redis.WriteJWTToBlacklist(c.Request.Context(), tokenStr, h.cfg.JWTExpiresIn)
 	}
-	c.SetCookie("jwt_token", "", -1, "/", "", false, true)
+	setSessionCookie(c, "", -1)
 
 	c.JSON(http.StatusOK, gin.H{
 		"user_id":       userID,
 		"authenticated": 0,
 	})
+}
+func setSessionCookie(c *gin.Context, token string, maxAge int) {
+	host, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+	viaHTTPSProxy := net.ParseIP(host).IsLoopback() && c.GetHeader("X-Forwarded-Proto") == "https"
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("jwt_token", token, maxAge, "/", "", c.Request.TLS != nil || viaHTTPSProxy, true)
 }

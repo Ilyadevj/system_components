@@ -71,6 +71,15 @@ func (r *Repository) GetPublishedComponentsAPI(selectedGroups []string, currentU
 			isCreator = 1
 		}
 
+		var liked int64
+		if currentUserID != 0 {
+			err := r.db.Model(&ds.ComponentLike{}).
+				Where("component_id = ? AND user_id = ?", c.ID, currentUserID).Count(&liked).Error
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		result = append(result, ds.ComponentGridSerializer{
 			ID:          c.ID,
 			Name:        c.Name,
@@ -81,6 +90,7 @@ func (r *Repository) GetPublishedComponentsAPI(selectedGroups []string, currentU
 			Grouping:    c.Grouping,
 			LikesCount:  cnt,
 			IsCreator:   isCreator,
+			IsLiked:     int(liked),
 		})
 	}
 

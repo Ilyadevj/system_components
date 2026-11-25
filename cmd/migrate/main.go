@@ -17,7 +17,6 @@ func main() {
 		logrus.Fatalf("Ошибка подключения к БД: %v", err)
 	}
 
-
 	err = db.AutoMigrate(
 		&ds.User{},
 		&ds.Component{},
@@ -28,7 +27,6 @@ func main() {
 	}
 
 	logrus.Info("Таблицы успешно созданы/обновлены!")
-
 
 	seedData(db)
 }
@@ -74,7 +72,7 @@ func seedData(db *gorm.DB) {
 			Name:        "Go API Gateway",
 			Description: &desc1,
 			Status:      ds.StatusPublished,
-			ImageURL:    "/static/img/defaultIcon.png",
+			ImageURL:    "/static/img/defaulticon.png",
 			VideoURL:    "/static/video/defaultVideo.mp4",
 			Priority:    &prio1,
 			Grouping:    &group1,
@@ -85,7 +83,7 @@ func seedData(db *gorm.DB) {
 			Name:        "Кэш-память Redis",
 			Description: &desc2,
 			Status:      ds.StatusPublished,
-			ImageURL:    "/static/img/defaultIcon.png",
+			ImageURL:    "/static/img/defaulticon.png",
 			VideoURL:    "/static/video/defaultVideo.mp4",
 			Priority:    &prio2,
 			Grouping:    &group2,
@@ -96,7 +94,7 @@ func seedData(db *gorm.DB) {
 			Name:        "Кластер PostgreSQL",
 			Description: &desc3,
 			Status:      ds.StatusPublished,
-			ImageURL:    "/static/img/defaultIcon.png",
+			ImageURL:    "/static/img/defaulticon.png",
 			VideoURL:    "/static/video/defaultVideo.mp4",
 			Priority:    &prio3,
 			Grouping:    &group3,
@@ -107,7 +105,7 @@ func seedData(db *gorm.DB) {
 			Name:        "Kafka Message Broker",
 			Description: &desc4,
 			Status:      ds.StatusDeleted,
-			ImageURL:    "/static/img/defaultIcon.png",
+			ImageURL:    "/static/img/defaulticon.png",
 			VideoURL:    "/static/video/defaultVideo.mp4",
 			Priority:    &prio4,
 			Grouping:    &group4,
@@ -118,7 +116,7 @@ func seedData(db *gorm.DB) {
 			Name:        "Elasticsearch Cluster",
 			Description: nil,
 			Status:      ds.StatusDraft,
-			ImageURL:    "/static/img/defaultIcon.png",
+			ImageURL:    "/static/img/defaulticon.png",
 			VideoURL:    "/static/video/defaultVideo.mp4",
 			Priority:    nil,
 			Grouping:    nil,

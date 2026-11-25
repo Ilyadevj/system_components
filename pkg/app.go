@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"os"
 	"system_components/internal/app/config"
 	"system_components/internal/app/handler"
 
@@ -88,9 +89,11 @@ func (a *Application) RunApp() {
 		}
 	}
 
-	serverAddr := ":8080"
-	logrus.Infof("Server listening on http://localhost%s", serverAddr)
-	logrus.Infof("Swagger UI available at http://localhost%s/swagger/index.html", serverAddr)
+	serverAddr := os.Getenv("BACKEND_LISTEN_ADDR")
+	if serverAddr == "" {
+		serverAddr = "127.0.0.1:8080"
+	}
+	logrus.Infof("Server listening on %s", serverAddr)
 	if err := a.Router.Run(serverAddr); err != nil {
 		logrus.Fatalf("Failed to run server: %v", err)
 	}

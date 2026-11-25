@@ -6,7 +6,7 @@
 - **Фронтенд:** React 19, TypeScript, Redux Toolkit, Vite PWA, Axios.
 - **Сетевой контур и безопасность:**
   - Локальный Wi-Fi контур (`192.168.x.x`)
-  - Node.js HTTPS Reverse Proxy с самоподписанным SSL-сертификатом (SAN: `localhost`, `127.0.0.1`, IP ноутбука)
+  - Node.js HTTPS Reverse Proxy с TLS-сертификатом, подписанным локальным CA (SAN: `localhost`, `127.0.0.1`, IP ноутбука)
   - GitHub Pages развертывание для статического PWA в режиме mock-данных.
 
 ## 2. Схема взаимодействия узлов при работе со смартфоном (ЛР7)
@@ -25,7 +25,7 @@
 |  [Node.js HTTPS Reverse Proxy (:8443)]                      |
 |    - SSL Termination (cert.crt, cert.key)                   |
 |    - Раздача статики PWA (SPA fallback, Service Worker)     |
-|    - /api/*               -> Проксирование на :8080         |
+|    - /api/* и /static/*   -> Проксирование на :8080         |
 |    - /system-components/* -> Проксирование на :9000         |
 |                                                             |
 |  [Go Gin Web Service (:8080)]                               |
@@ -41,17 +41,22 @@
 ## 3. Запуск контура для показа ЛР7
 1. Запуск БД, Redis и MinIO:
    ```bash
-   docker-compose up -d
+   docker compose up -d postgres redis minio
    ```
 2. Запуск Go бэкенда:
    ```bash
-   go run ./cmd/system_components/main.go
+   go run ./cmd/migrate
+   go run ./cmd/system_components
    ```
 3. Запуск фронтенда и HTTPS реверс-прокси:
    ```bash
    cd ../system-components-frontend
+   npm ci
+   npm run generate-cert -- 192.168.1.42
    npm run build
    npm run serve:https
    ```
 4. Открытие со смартфона в той же сети:
    `https://<IP_НОУТБУКА>:8443`
+
+   Используйте фактический IPv4 ноутбука при генерации сертификата. Установите на телефоне корневой сертификат `ca.crt` и подключите телефон к той же сети Wi-Fi. Подробности запуска и публикации приведены в [README фронтенда](https://github.com/Ilyadevj/system-components-frontend/blob/lab7/README.md).

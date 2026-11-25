@@ -54,11 +54,18 @@ func (h *Handler) DeleteComponent(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/system-components")
 }
 
-
 func (h *Handler) GetComponentsGridAPI(c *gin.Context) {
 	selectedGroups := c.QueryArray("groups")
 	if singleGroup := c.Query("grouping"); singleGroup != "" {
 		selectedGroups = append(selectedGroups, singleGroup)
+	}
+
+	// Старые карточки хранят сокращённое имя группы БД.
+	for _, group := range selectedGroups {
+		if group == "Базы данных" {
+			selectedGroups = append(selectedGroups, "БД")
+			break
+		}
 	}
 
 	userID := GetCurrentUserID(c)

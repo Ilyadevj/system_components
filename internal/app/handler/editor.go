@@ -43,7 +43,7 @@ func (h *Handler) CreateDraft(c *gin.Context) {
 	videoURL := c.PostForm("video_url")
 
 	if imgURL == "" {
-		imgURL = "/static/img/defaultIcon.png"
+		imgURL = "/static/img/defaulticon.png"
 	}
 	if videoURL == "" {
 		videoURL = "/static/video/defaultVideo.mp4"
@@ -155,7 +155,7 @@ func (h *Handler) CreateDraftAPI(c *gin.Context) {
 		}
 	}
 
-	defaultImg := "/static/img/defaultIcon.png"
+	defaultImg := "/static/img/defaulticon.png"
 	defaultVideo := "/static/video/defaultVideo.mp4"
 
 	// Автозаполнение CreatorID = userID из JWT

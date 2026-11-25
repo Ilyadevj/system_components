@@ -43,6 +43,7 @@ type ComponentGridSerializer struct {
 	Grouping    *string `json:"grouping"`
 	LikesCount  int64   `json:"likes_count"`
 	IsCreator   int     `json:"is_creator"`
+	IsLiked     int     `json:"is_liked"`
 }
 
 type ComponentFeedSerializer struct {
@@ -59,7 +60,6 @@ type ComponentFeedSerializer struct {
 	IsMine      int     `json:"is_mine"`
 	HasNext     int     `json:"has_next"`
 }
-
 
 type PublishComponentRequest struct {
 	Description string `json:"description" form:"description" binding:"required"`
